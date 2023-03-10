@@ -6,3 +6,4 @@ terraform/terraform.tfvars
 terraform/errored.tfstate
 build
 *.zip
+venv
