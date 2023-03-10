@@ -3,3 +3,6 @@
 .terraform*
 **/terraform.tfplan
 terraform/terraform.tfvars
+terraform/errored.tfstate
+build
+*.zip
