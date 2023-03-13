@@ -25,7 +25,7 @@ resource "aws_lb" "pi_alb" {
   name               = "pi-alb"
   internal           = true
   load_balancer_type = "application"
-  security_groups    = ["sg-0330f3d740ffaeb69"]
+  security_groups    = ["sg-0330f3d740ffaeb69"] # Add the PanIntelligence server to this security group
   subnets            = ["subnet-0884c63b66e350163", "subnet-059902d9ee58cc274", "subnet-06ec00f2a6788bff5"]
 
   enable_deletion_protection = false
@@ -39,7 +39,7 @@ resource "aws_lb" "pi_alb" {
 
 resource "aws_lb_target_group" "pi_alb_tomcat_tg" {
   port        = 8224
-  protocol    = "HTTPS"
+  protocol    = "HTTP"
   vpc_id      = "vpc-0668d30a9cf84fc3e"
 }
 
@@ -51,61 +51,63 @@ resource "aws_lb_target_group_attachment" "pi_alb_tomcat_tg_att" {
 
 resource "aws_lb_listener" "pi_alb_tomcat_listener" {
   load_balancer_arn = aws_lb.pi_alb.arn
-  port              = "8224"
-  protocol          = "HTTPS"
+  # port              = "8224"
+  # protocol          = "HTTPS"
+  port              = 80
+  protocol          = "HTTP"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:ap-southeast-2:824763547294:certificate/98f4d37e-35b0-4c18-94bc-b80c249abacb"
+  # certificate_arn   = "arn:aws:acm:ap-southeast-2:824763547294:certificate/98f4d37e-35b0-4c18-94bc-b80c249abacb"
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.pi_alb_tomcat_tg.arn
   }
 }
 
-resource "aws_lb_target_group" "pi_alb_http_tg" {
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = "vpc-0668d30a9cf84fc3e"
-}
+# resource "aws_lb_target_group" "pi_alb_http_tg" {
+#   port        = 80
+#   protocol    = "HTTP"
+#   vpc_id      = "vpc-0668d30a9cf84fc3e"
+# }
 
-resource "aws_lb_target_group_attachment" "pi_alb_http_tg_att" {
-  target_group_arn = aws_lb_target_group.pi_alb_http_tg.arn
-  target_id        = "i-0545232137aa0a9de"
-  port             = 80
-}
+# resource "aws_lb_target_group_attachment" "pi_alb_http_tg_att" {
+#   target_group_arn = aws_lb_target_group.pi_alb_http_tg.arn
+#   target_id        = "i-0545232137aa0a9de"
+#   port             = 80
+# }
 
-resource "aws_lb_listener" "pi_alb_http_listener" {
-  load_balancer_arn = aws_lb.pi_alb.arn
-  port              = "80"
-  protocol          = "HTTP"
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.pi_alb_http_tg.arn
-  }
-}
+# resource "aws_lb_listener" "pi_alb_http_listener" {
+#   load_balancer_arn = aws_lb.pi_alb.arn
+#   port              = "80"
+#   protocol          = "HTTP"
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.pi_alb_http_tg.arn
+#   }
+# }
 
-resource "aws_lb_target_group" "pi_alb_tg" {
-  port        = 443
-  protocol    = "HTTPS"
-  vpc_id      = "vpc-0668d30a9cf84fc3e"
-}
+# resource "aws_lb_target_group" "pi_alb_tg" {
+#   port        = 443
+#   protocol    = "HTTPS"
+#   vpc_id      = "vpc-0668d30a9cf84fc3e"
+# }
 
-resource "aws_lb_target_group_attachment" "pi_alb_tg_att" {
-  target_group_arn = aws_lb_target_group.pi_alb_tg.arn
-  target_id        = "i-0545232137aa0a9de"
-  port             = 443
-}
+# resource "aws_lb_target_group_attachment" "pi_alb_tg_att" {
+#   target_group_arn = aws_lb_target_group.pi_alb_tg.arn
+#   target_id        = "i-0545232137aa0a9de"
+#   port             = 443
+# }
 
-resource "aws_lb_listener" "pi_alb_listener" {
-  load_balancer_arn = aws_lb.pi_alb.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:ap-southeast-2:824763547294:certificate/98f4d37e-35b0-4c18-94bc-b80c249abacb"
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.pi_alb_tg.arn
-  }
-}
+# resource "aws_lb_listener" "pi_alb_listener" {
+#   load_balancer_arn = aws_lb.pi_alb.arn
+#   port              = "443"
+#   protocol          = "HTTPS"
+#   ssl_policy        = "ELBSecurityPolicy-2016-08"
+#   certificate_arn   = "arn:aws:acm:ap-southeast-2:824763547294:certificate/98f4d37e-35b0-4c18-94bc-b80c249abacb"
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.pi_alb_tg.arn
+#   }
+# }
 
 resource "aws_apigatewayv2_vpc_link" "pi_vpc_link" {
   name        = "pi-vpc-link"
