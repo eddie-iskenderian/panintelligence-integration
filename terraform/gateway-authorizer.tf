@@ -53,13 +53,14 @@ data "aws_iam_policy_document" "pi_authorizer_lambda_assume_role" {
 resource "aws_iam_role" "pi_authorizer_lambda_role" {
   name               = "pi-auth-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.pi_authorizer_lambda_assume_role.json
+  # Add permissions for secrets manager and cloud watch
 }
 
 resource "aws_lambda_function" "pi_authorizer_lambda" {
   filename      = "${var.base_dir}/build/pi-auth-lambda.zip"
   function_name = "pi-auth-lambda"
   role          = aws_iam_role.pi_authorizer_lambda_role.arn
-  handler       = "index.handler"
+  handler       = "index.lambda_handler"
   runtime       = "python3.9"
   source_code_hash = filebase64sha256("${var.base_dir}/build/pi-auth-lambda.zip")
 }
